@@ -1,0 +1,46 @@
+{
+open System;;
+open Microsoft.FSharp.Text.Lexing;;
+open System.Text;;
+
+let mutable currentLine = 1
+let mutable lineStartPos = [0]
+
+let rec getLineCol pos line = function
+    |  p1 :: ps ->
+        if pos >= p1
+        then (line, pos - p1)
+        else getLineCol pos (line - 1) ps
+    |  [] -> (0, 0) (* should not happen *)
+
+let getPos (lexbuf : LexBuffer<'char>) =
+    getLineCol lexbuf.StartPos.pos_cnum currentLine lineStartPos
+
+exception Error of AST.Pos
+
+let lexerError lexbuf =
+    raise (Error (getPos lexbuf))
+}
+
+rule Token = parse
+    [' ' '\t' '\r']     { Token lexbuf } (* whitespace *)
+  | ['\n' '\012']       { currentLine <- currentLine + 1;
+                          lineStartPos <-  lexbuf.StartPos.pos_cnum
+                                           :: lineStartPos;
+                          Token lexbuf } (* newlines *)
+  | "#" [^ '\n' '\012']*
+                         { Token lexbuf } (* comment *)
+  | ['1'-'9']['0'-'9']* { Parser.NUM
+                           (int (Encoding.UTF8.GetString(lexbuf.Lexeme)),
+                            getPos lexbuf) }
+  | "true"  { Parser.TRUE (getPos lexbuf) }
+  | "false" { Parser.TRUE (getPos lexbuf) }
+  | [^ ' ' '\t' '\r' '\n' '\012' ':']+ ':'
+                        { let s = Encoding.UTF8.GetString lexbuf.Lexeme
+                          in Parser.DECLARATION (s.[0..(String.length s - 2)],
+                                                 getPos lexbuf) }
+  | [^ ' ' '\t' '\r' '\n' '\012']+
+                        { Parser.SYMBOL (Encoding.UTF8.GetString(lexbuf.Lexeme),
+                                         getPos lexbuf) }
+  | eof                 { Parser.EOF (getPos lexbuf) }
+  | _                   { lexerError lexbuf }

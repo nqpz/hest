@@ -1,0 +1,38 @@
+%{
+open Microsoft.FSharp.Text.Parsing;;
+
+let mutable errorPosition : int * int = (0, 0)
+%}
+
+%token <int*(int*int)> NUM
+%token <string*(int*int)> DECLARATION SYMBOL
+%token <(int*int)> TRUE FALSE EOF
+
+%start Program
+%type <AST.Expression> Expression
+%type <AST.Routine> Routine
+%type <AST.Program> Program
+
+%%
+
+Expression : NUM    { AST.IntLit $1 }
+           | TRUE   { AST.BoolLit (true, $1) }
+           | FALSE  { AST.BoolLit (false, $1) }
+           | SYMBOL { AST.Symbol $1 }
+;
+
+Expressions : Expression Expressions { $1 :: $2 }
+            | Expression { [$1] }
+;
+
+Routine : DECLARATION Expressions { AST.Routine ($1, $2) }
+;
+
+Routines : Routine Routines { $1 :: $2 }
+         | Routine          { [$1] }
+;
+
+Program : Routines EOF { $1 }
+;
+
+%%
