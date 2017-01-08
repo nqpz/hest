@@ -36,3 +36,28 @@ If this succeeds, you can then run the inpreter `./bin/hest`.  Run
 ```
 
 to interpret the program "path/to/file.hest".
+
+
+## Horse
+
+```
+              /\,%,_
+              \%%%/,\
+            _.-"%%|//%
+          .'  .-"  /%%%
+      _.-'_.-" 0)   \%%%
+     /.\.'           \%%%
+     \ /      _,      %%%
+      `"---"~`\   _,*'\%%'   _,--""""-,%%,
+               )*^     `""~~`          \%%%,
+             _/                         \%%%
+         _.-`/                           |%%,___
+     _.-"   /      ,           ,        ,|%%   .`\
+    /\     /      /             `\       \%'   \ /
+    \ \ _,/      /`~-._         _,`\      \`""~~`
+     `"` /-.,_ /'      `~"----"~    `\     \
+   jgs   \___,'                       \.-"`/
+                                       `--'
+```
+
+(From http://chris.com/ascii/index.php?art=animals/horses)
