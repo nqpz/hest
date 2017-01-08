@@ -32,7 +32,7 @@ FSLEXYAC_BIN="path/to/binaries_directory" make
 If this succeeds, you can then run the inpreter `./bin/hest`.  Run
 
 ```
-./bin/hest --help
+./bin/hest path/to/file.hest
 ```
 
-to learn how to use it.
+to interpret the program "path/to/file.hest".
