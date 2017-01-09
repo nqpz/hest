@@ -12,6 +12,8 @@ This project exists mostly for me to learn to use F#.
 
 Find examples in the `test` directory.
 
+A program must have an entry named `vrinsk`.  This is the main entry.
+
 
 ## Installation
 
