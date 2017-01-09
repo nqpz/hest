@@ -1,0 +1,7 @@
+vrinsk: read ! fact ! print !
+
+fact: dup ! 0 = ! fact_step swap ! fact_end swap ! if !
+
+fact_end: pop ! 1
+
+fact_step: dup ! 1 swap ! - ! fact ! * !

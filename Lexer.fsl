@@ -30,9 +30,9 @@ rule Token = parse
                           Token lexbuf } (* newlines *)
   | "#" [^ '\n' '\012']*
                          { Token lexbuf } (* comment *)
-  | ['1'-'9']['0'-'9']* { Parser.NUM
-                           (int (Encoding.UTF8.GetString(lexbuf.Lexeme)),
-                            getPos lexbuf) }
+  | ['0'-'9']+ { Parser.NUM
+                   (int (Encoding.UTF8.GetString(lexbuf.Lexeme)),
+                    getPos lexbuf) }
   | "true"  { Parser.TRUE (getPos lexbuf) }
   | "false" { Parser.TRUE (getPos lexbuf) }
   | [^ ' ' '\t' '\r' '\n' '\012' ':']+ ':'
