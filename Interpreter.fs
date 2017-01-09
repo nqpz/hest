@@ -47,59 +47,25 @@ let interpretProgram (routines : Program) : unit =
             interpretWord xs (lookup sym)
         | _ ->
             raise (Error "expecting symbol")
-    
+
     let hestSwap (stack : Stack) : Stack =
         match stack with
         | x0 :: x1 :: xs ->
             x1 :: x0 :: xs
         | _ -> raise (Error "stack too small")
-    
+
     let hestDup (stack : Stack) : Stack =
         match stack with
         | x :: xs ->
             x :: x :: xs
         | _ -> raise (Error "stack empty")
-    
+
     let hestPop (stack : Stack) : Stack =
         match stack with
         | _ :: xs ->
             xs
         | _ -> raise (Error "stack empty")
-    
-    let hestAdd (stack : Stack) : Stack =
-        match stack with
-        | x0 :: x1 :: xs ->
-            match (x0, x1) with
-            | (IntVal i0, IntVal i1) -> IntVal (i0 + i1) :: xs
-            | _ -> raise (Error "invalid stack elements")
-        | _ ->
-            raise (Error "stack too small")
-    
-    let hestSubtract (stack : Stack) : Stack =
-        match stack with
-        | x0 :: x1 :: xs ->
-            match (x0, x1) with
-            | (IntVal i0, IntVal i1) -> IntVal (i0 - i1) :: xs
-            | _ -> raise (Error "invalid stack elements")
-        | _ ->
-            raise (Error "stack too small")
-    
-    let hestMultiply (stack : Stack) : Stack =
-        match stack with
-        | x0 :: x1 :: xs ->
-            match (x0, x1) with
-            | (IntVal i0, IntVal i1) -> IntVal (i0 * i1) :: xs
-            | _ -> raise (Error "invalid stack elements")
-        | _ ->
-            raise (Error "stack too small")
-    
-    let hestEqual (stack : Stack) : Stack =
-        match stack with
-        | x0 :: x1 :: xs ->
-            BoolVal (x0 = x1) :: xs
-        | _ ->
-            raise (Error "stack too small")
-    
+
     let hestRead (stack : Stack) : Stack =
         let line = stdin.ReadLine()
         let res = match line with
@@ -111,7 +77,7 @@ let interpretProgram (routines : Program) : unit =
                              | :? System.FormatException ->
                                  raise (Error "invalid input")
         res :: stack
-    
+
     let hestPrint (stack : Stack) : Stack =
         match stack with
         | x :: xs ->
@@ -122,7 +88,7 @@ let interpretProgram (routines : Program) : unit =
             xs
         | [] ->
             raise (Error "stack empty")
-    
+
     let hestIf (stack : Stack) : Stack =
         match stack with
         | (BoolVal cond) :: (SymVal branch_true) :: (SymVal branch_false) :: s ->
@@ -131,19 +97,58 @@ let interpretProgram (routines : Program) : unit =
             else interpretWord s (lookup branch_false)
         | _ ->
             raise (Error "invalid stack elements")
-    
+
+    let binOp (op : (Value -> Value -> Value)) (stack : Stack) : Stack =
+        match stack with
+        | x0 :: x1 :: xs ->
+            op x0 x1 :: xs
+        | _ ->
+            raise (Error "stack too small")
+
+    let binOpInt (op : (int -> int -> int)) =
+        let inner v0 v1 =
+            match (v0, v1) with
+            | (IntVal i0, IntVal i1) -> IntVal (op i0 i1)
+            | _ -> raise (Error "invalid stack elements")
+        binOp inner
+
+    let binOpBool (op : (bool -> bool -> bool)) =
+        let inner v0 v1 =
+            match (v0, v1) with
+            | (BoolVal b0, BoolVal b1) -> BoolVal (op b0 b1)
+            | _ -> raise (Error "invalid stack elements")
+        binOp inner
+
+    let binOpBoolResult (op : (Value -> Value -> bool)) =
+        let inner v0 v1 = BoolVal (op v0 v1)
+        binOp inner
+
+    let binOpIntBoolResult (op : (int -> int -> bool)) =
+        let inner v0 v1 =
+            match (v0, v1) with
+            | (IntVal i0, IntVal i1) -> BoolVal (op i0 i1)
+            | _ -> raise (Error "invalid stack elements")
+        binOp inner
+
     let builtins : WordMap =
         [
             ("swap", Builtin hestSwap);
             ("dup", Builtin hestDup);
             ("pop", Builtin hestPop);
-            ("+", Builtin hestAdd);
-            ("-", Builtin hestSubtract);
-            ("*", Builtin hestMultiply);
-            ("=", Builtin hestEqual);
             ("read", Builtin hestRead)
             ("print", Builtin hestPrint)
             ("if", Builtin hestIf)
+            ("+", Builtin <| binOpInt (+));
+            ("-", Builtin <| binOpInt (-));
+            ("*", Builtin <| binOpInt (*));
+            ("%", Builtin <| binOpInt (%));
+            ("&", Builtin <| binOpBool (&&));
+            ("|", Builtin <| binOpBool (||));
+            ("=", Builtin <| binOpBoolResult (=));
+            ("<", Builtin <| binOpIntBoolResult (<));
+            ("<=", Builtin <| binOpIntBoolResult (<=));
+            (">", Builtin <| binOpIntBoolResult (>));
+            (">=", Builtin <| binOpIntBoolResult (>=));
         ]
 
     let defined = List.map (fun (Routine ((name, _pos), exps)) ->
