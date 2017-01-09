@@ -1,0 +1,7 @@
+vrinsk: read ! fib ! print !
+
+fib: dup ! 1 >= ! fib_step swap ! fib_end swap ! if !
+
+fib_end:
+
+fib_step: 1 swap ! - ! dup ! 1 swap ! - ! fib ! swap ! fib ! + !

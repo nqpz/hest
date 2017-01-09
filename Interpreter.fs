@@ -41,10 +41,13 @@ let interpretProgram (routines : Program) : unit =
                          | Symbol ("!", pos) -> apply s
                          | Symbol (sym, pos) -> SymVal sym :: s
                 interpretWord s1 (Defined es)
+
     and apply (stack : Stack) : Stack =
         match stack with
         | (SymVal sym) :: xs ->
-            interpretWord xs (lookup sym)
+            let xs1 = interpretWord xs (lookup sym)
+            // printfn "%s %A -> %A" sym xs xs1
+            xs1
         | _ ->
             raise (Error "expecting symbol")
 
@@ -138,13 +141,17 @@ let interpretProgram (routines : Program) : unit =
             ("read", Builtin hestRead)
             ("print", Builtin hestPrint)
             ("if", Builtin hestIf)
+
             ("+", Builtin <| binOpInt (+));
             ("-", Builtin <| binOpInt (-));
             ("*", Builtin <| binOpInt (*));
             ("%", Builtin <| binOpInt (%));
+
             ("&", Builtin <| binOpBool (&&));
             ("|", Builtin <| binOpBool (||));
+
             ("=", Builtin <| binOpBoolResult (=));
+
             ("<", Builtin <| binOpIntBoolResult (<));
             ("<=", Builtin <| binOpIntBoolResult (<=));
             (">", Builtin <| binOpIntBoolResult (>));

@@ -22,7 +22,7 @@ Expression : NUM    { AST.IntLit $1 }
 ;
 
 Expressions : Expression Expressions { $1 :: $2 }
-            | Expression { [$1] }
+            | { [] }
 ;
 
 Routine : DECLARATION Expressions { AST.Routine ($1, $2) }
