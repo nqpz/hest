@@ -10,7 +10,7 @@ This project exists mostly for me to learn to use F#.
 
 ## Language
 
-
+Find examples in the `test` directory.
 
 
 ## Installation
