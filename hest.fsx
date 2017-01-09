@@ -46,8 +46,8 @@ let main (paramList: string[]) : int =
   try
       Interpreter.interpretProgram program
   with
-      | Interpreter.Error (info, (line, col)) ->
-          eprintfn "error: interpreter: %s at line %d, position %d" info line col
+      | Interpreter.Error info ->
+          eprintfn "error: interpreter: %s" info
           exit 1
       | ex ->
           eprintfn "%s" ex.Message
