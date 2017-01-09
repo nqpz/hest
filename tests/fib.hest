@@ -1,4 +1,6 @@
-vrinsk: read ! fib ! print !
+vrinsk: fib interact !
+
+interact: read ! swap ! ! print !
 
 fib: dup ! 1 >= ! fib_step swap ! fib_end swap ! if !
 
