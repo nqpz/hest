@@ -5,3 +5,4 @@ Parser.fs.fsi
 Parser.fs
 Lexer.fs
 FSharp.PowerPack.dll
+/hest-static

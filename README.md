@@ -39,6 +39,10 @@ If this succeeds, you can then run the inpreter `./bin/hest`.  Run
 
 to interpret the program "path/to/file.hest".
 
+Alternatively you can also run `make static` to produce the (huge!)
+static executable in `bin/hest-static` with no dynamic dependencies on
+any Mono library.
+
 
 ## Horse
 

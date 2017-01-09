@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean static
 
 FSLEX=mono $(FSLEXYAC_BIN)/fslex.exe
 FSYACC=mono $(FSLEXYAC_BIN)/fsyacc.exe
@@ -32,4 +32,9 @@ bin/%.dll: %.fs
 	fsharpc -a $< -o $@
 
 clean:
-	cd bin && mv FSharp.PowerPack.dll temp && rm -f *.dll *.exe Parser.fsi Parser.fs.fsi Parser.fs Lexer.fs && mv temp FSharp.PowerPack.dll
+	cd bin && mv FSharp.PowerPack.dll temp && rm -f *.dll *.exe Parser.fsi Parser.fs.fsi Parser.fs Lexer.fs hest-static && mv temp FSharp.PowerPack.dll
+
+static: bin/hest-static
+
+bin/hest-static: bin/hest.exe
+	mkbundle -o bin/hest-static -z --deps --static bin/hest.exe bin/*.dll
